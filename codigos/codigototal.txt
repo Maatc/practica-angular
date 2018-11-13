@@ -1,0 +1,122 @@
+------------------------index. js-----------------
+const express = require('express');
+//const cors = require('cors');
+const morgan = require('morgan');
+const app = express();
+
+const { mongoose } = require('./database');
+
+// Settings
+app.set('port', process.env.PORT || 3000);
+
+// Middlewares
+app.use(morgan('dev'));
+//app.use(cors({origin: 'http://localhost:4200'}));
+app.use(express.json());
+
+// Routes
+app.use('/api/employees', require('./routes/employee.routes'));
+//app.use(require('./routes/employee.routes'));
+
+// starting the server
+app.listen(app.get('port'),( ) => {
+    console.log('server on port 3000');
+});
+--------------------employee.route.js---------------------
+const express = require('express');
+const router = express.Router();
+const employee = require('../controllers/employee.controller');
+
+//router.get('/',
+    //res.send('Hello World');
+//);
+
+router.get('/', employee.getEmployees);
+router.post('/', employee.createEmployee);
+router.get('/:id', employee.getEmployee);
+router.put('/:id', employee.editEmployee);
+router.delete('/:id', employee.deleteEmployee);
+
+module.exports = router;
+-----------------------employee.js-------------------
+
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
+
+const employeeSchema = new Schema({
+    name: { type: String, required: true},
+    position: { type: String, required: true },
+    office: { type: String, required: true },
+    salary: { type: Number, required: true}
+});
+
+module.exports = mongoose.model('Employee', employeeSchema);
+--------------------------employee.controller.js-------
+const Employee = require('../models/employee');
+
+const employeeCtrl = {};
+employeeCtrl.getEmployees = async (req,res)=>{
+    //res.json({
+        //status:'Employees goes here'});
+
+        //employeeCtrl.getEmployees = async (req, res, next) => {
+    const employees = await Employee.find();
+    res.json(employees);
+};
+
+//employeeCtrl.createEmployee = async (req, res, next) => {
+employeeCtrl.createEmployee = async (req,res)=>{
+   //console.log(req.body);
+   const employee =new Employee(req.body);
+   //console.log(employee);
+   //res.json('received');
+    //const employee = new Employee({
+    //    name: req.body.name,
+    //    position: req.body.position,
+    //    office: req.body.office,
+    //    salary: req.body.salary
+    //});
+    await employee.save();
+    res.json({'status': 'Employee save'});
+};
+
+//employeeCtrl.getEmployee = async (req, res, next) => {
+employeeCtrl.getEmployee = async (req,res)=>{
+    const { id } = req.params;
+    const employee = await Employee.findById(id);
+    res.json(employee);
+};
+
+//employeeCtrl.editEmployee = async (req, res, next) => {
+employeeCtrl.editEmployee = async (req,res)=>{
+     const { id } = req.params;
+     const employee = {
+        name: req.body.name,
+        position: req.body.position,
+        office: req.body.office,
+        salary: req.body.salary
+};
+     await Employee.findByIdAndUpdate(id, {$set: employee}, {new: true});
+     res.json({status: 'Employee Updated'});
+};
+
+//employeeCtrl.deleteEmployee = async (req, res, next) => {
+employeeCtrl.deleteEmployee = async (req,res)=>{
+     await Employee.findByIdAndRemove(req.params.id);
+     res.json({status: 'Employee Deleted'});
+};
+
+module.exports = employeeCtrl;
+---------------------database.js----------------
+const mongoose = require('mongoose');
+const URI = 'mongodb://localhost/mean-crud';
+
+mongoose.connect(URI)
+    .then(db => console.log('db is connected'))
+    .catch(err => console.error(err));
+
+module.exports = mongoose;
+
+
+
+------------------frontend-------------------------

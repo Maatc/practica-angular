@@ -1,0 +1,39 @@
+npm init --yes
+npm install express
+node server/index.js
+npm install nodemon -D
+npm remove nodemon
+npm run dev
+npm install morgan
+npm install mongoose
+
+
+para iniciar en index y en la terminal
+npm run dev
+mongod
+
+
+en cmd mongod
+
+
+---------------en frontend------------------------
+npm install -g @angular/cli
+ng new frontend   ------ genera proyecto angular---
+primero con comandos vas a tu carpeta donde esta tu proyecto
+ng serve     ------ crea un puerto en el hostlocal:4200
+
+iniciamos tambien el puerto 3000
+
+
+en frontend en la terminal
+cd src/app/components/
+
+ng g c employees ----genera componentes
+ng g class employee  ----genera una clase en models
+
+
+
+linkeamos los css,icons, javascript
+
+iniciamos desde frontend
+ng serve 
